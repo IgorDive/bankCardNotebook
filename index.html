@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>BandCardNotebook</title>
+		<link rel="stylesheet" type="text/css" href="./css/normalize.css">
+		<link rel="stylesheet" type="text/css" href="./css/style.css">
+		<script src='https://cdn.jsdelivr.net/g/lodash@4(lodash.min.js+lodash.fp.min.js)'></script>
+	</head>
+	<body>
+		<div class="entry-point" id="entry-point"></div>
+		<script type="template" id="bank-card-notebook">
+			<form class="bank-card-notebook" id="bank-card-notebook" name="bank-card-notebook">
+				<fieldset>
+					<legend><%-titleInputSection%></legend>
+					<div class="bank-card-notebook__wrapper-of-input-data">
+						<input type="text" name="number-of-card" placeholder="input number your card" data-mask="____ - ____ - ____ - ____" autofocus>
+						<input type="text" name="comment-of-card" maxlength="1024" placeholder="your info, max 1024 symbols">
+						<input type="button" value="record" disabled>
+					</div>
+				</fieldset>         
+				<fieldset>
+					<legend><%-titleListSection%></legend>
+					<div class="bank-card-notebook__list">
+					</div>
+				</fieldset>
+			</form>
+		</script>
+		<script type="template" id="bank-card-notebook__item">
+			<div class="bank-card-notebook__item">
+				<div class="bank-card-notebook__item-wrapper">
+					<div class="bank-card-notebook__item-logo <%-brand%>"></div>
+					<div class="bank-card-notebook__item-number"><%-number%></div>
+					<div class="bank-card-notebook__item-close">X</div>
+				</div>
+				<div class="bank-card-notebook__item-info"><%-comment%></div>
+			</div>
+		</script>
+		
+		<script src="./js/index.js" type="text/javascript"></script>
+	</body>
+</html>
