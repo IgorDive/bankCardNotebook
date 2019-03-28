@@ -1,24 +1,28 @@
 
 let options = {
-	titleInputSection: "input fields",
-	titleListSection: "list of cards",
+	titleInputSection: 'input fields',
+	titleListSection: 'list of cards',
+	alarmIextForCardNumber: 'The number is wrong or already exist',
+	validationBankCard: createValidationBankCard(),
 	initState: JSON.parse(window.localStorage.getItem('initState')),
 	tmplNotebook: _.template(document.getElementById('bank-card-notebook').innerHTML),
 	tmplItem: _.template(document.getElementById('bank-card-notebook__item').innerHTML),
 };
-let notebook = new Notebook(options);
+let notebook = new createNotebook(options);
 let notebookNode = notebook.getElem();
 
 document.getElementById('entry-point').appendChild(notebookNode);
 
 
 
-function Notebook(optons) {
+function createNotebook(optons) {
 	let elem;
 	let state = options.initState || {ids: [], elements: {},};
 	let inputOfNumber;
 	let inputOfComment;
 	let listOfCards;
+	let { alarmIextForCardNumber } = options;
+	let { validationBankCard } = options;
 
 	function getElem() {
 		if (!elem) render();
@@ -48,7 +52,10 @@ function Notebook(optons) {
 
 			applyMask(isEventOnNumberOfCard);
 			checkLengthOfNumberOfCard();			
-			if ( inputOfNumber.classList.contains('wrong-number') ) inputOfNumber.classList.remove('wrong-number');
+			if ( inputOfNumber.classList.contains('wrong-number') ) {
+				inputOfNumber.classList.remove('wrong-number');
+				removeAlarmWindow(isEventOnNumberOfCard);
+			}
 		}
 
 		elem.onclick = function(e) {
@@ -60,14 +67,12 @@ function Notebook(optons) {
 
 			if ( isEventOnRecord ) {
 				let id = inputOfNumber.value;
-				let brandOfCard = getBrandOfCard(id);
 
-
-				if ( !brandOfCard ) {
-					wrongNumber();
+				if ( !validationBankCard(id) || state.ids.some( (item) => item === id) ) {
+					createAlarmWindow(inputOfNumber, alarmIextForCardNumber);
 				} else {
 					state.ids.push(id);
-					state.elements[id] = [inputOfComment.value, brandOfCard];
+					state.elements[id] = [inputOfComment.value, validationBankCard.getCardBrand(id)];
 					renderItem(id);
 					inputOfComment.value = '';
 					inputOfNumber.value = '';
@@ -91,15 +96,6 @@ function Notebook(optons) {
 		}
 	}
 
-	function getBrandOfCard(number) {
-		let unbrokenNumber = number.replace(/\D/g, '');
-
-		if ( /^4[0-9]{12}(?:[0-9]{3})?$/.test(unbrokenNumber) ) return 'visa';
-
-		if ( /^(5[1-5][0-9]{14}|2221[0-9]{12}|222[2-9][0-9]{12}|22[3-9][0-9]{13}|2[3-6][0-9]{14}|27[01][0-9]{13}|2720[0-9]{12})$/.test(unbrokenNumber) ) return 'master-card';
-
-		return null;
-	}
 
 	function renderList() {
 		state.ids.forEach((id) => {
@@ -114,12 +110,12 @@ function Notebook(optons) {
 			comment: state.elements[id][0],
 		});
 
-		let el = document.createElement('div');
+		let item = document.createElement('div');
 
-		el.innerHTML = html;
-		el = el.firstElementChild;
+		item.innerHTML = html;
+		item = item.firstElementChild;
 
-		listOfCards.appendChild(el);
+		listOfCards.appendChild(item);
 	}
 
 	function deleteItem(card) {
@@ -154,16 +150,36 @@ function Notebook(optons) {
 
 	function checkLengthOfNumberOfCard() {
 		if ( inputOfNumber.value.length === 25 ) {
-				inputOfComment.nextElementSibling.disabled = false;
+			inputOfComment.nextElementSibling.disabled = false;
 		} else {
-				inputOfComment.nextElementSibling.disabled = true;
+			inputOfComment.nextElementSibling.disabled = true;
 		}
 	}
 
-	function wrongNumber() {
-		inputOfNumber.focus();
-		inputOfNumber.classList.add('wrong-number');
-		alert('Wrong number');
+	function removeAlarmWindow(link) {
+		let alarmWindow = link.parentElement.querySelector('.alarm-win');
+
+		link.parentElement.removeChild(alarmWindow);
+	}
+
+	function createAlarmWindow(link, text) {
+		if ( link.parentElement.querySelector('.alarm-win') ) {
+			link.focus();
+			return;
+		} 
+
+		let win = document.createElement('div');
+		let pointer = document.createElement('div');
+
+		win.className = 'alarm-win';
+		pointer.className = 'alarm-win-pointer';
+
+		win.textContent = text;
+		win.appendChild(pointer);
+		link.parentElement.appendChild(win);
+		
+		link.focus();
+		link.classList.add('wrong-number');
 	}
 
 	this.getElem = getElem;
