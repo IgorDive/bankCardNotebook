@@ -85,15 +85,24 @@ function createNotebook(optons) {
 			if ( isEventOnClose && confirm('Are you sure?') )  {
 				
 				let id = isEventOnClose.previousElementSibling.textContent;
-				let card = isEventOnClose.closest('.bank-card-notebook__item');
-		
+				let deletedCard = isEventOnClose.closest('.bank-card-notebook__item');
+				
 				state.ids = state.ids.filter( (elem) => elem !== id );
 				delete state.elements[id];
-				deleteItem(card);
+				deletedCard.classList.remove('adding-item');
+				deletedCard.classList.add('remove-item');
 				inputOfNumber.focus();
 				sendDataToLocalStorage();
 			}
 		}
+
+		elem.addEventListener('animationend', function(e) {
+			let deletedCard = e.target.closest('.bank-card-notebook__item.remove-item');
+
+			if ( !deletedCard ) return;
+
+			deleteItem(deletedCard);
+		}, false);
 	}
 
 

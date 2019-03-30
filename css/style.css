@@ -3,6 +3,11 @@
 	to {transform: scale(1)}
 }
 
+@keyframes RemoveWin {
+	from {transform: scale(1)}
+	to {transform: scale(0)}
+}
+
 body {
 	font-size: 10px;
 }
@@ -81,7 +86,14 @@ body {
 	background-color: lightgray;
 	box-shadow: 5px 5px 5px gray;
 	margin: 10px 0px;
+}
+
+.bank-card-notebook__item.adding-item {
 	animation: AnimWin cubic-bezier(0, 0, 0, 1) 0.5s 1;
+}
+
+.bank-card-notebook__item.remove-item {
+	animation: RemoveWin cubic-bezier(0, 0, 0, 1) 0.5s 1;
 }
 
 .bank-card-notebook__item-wrapper {
